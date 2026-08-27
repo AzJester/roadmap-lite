@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+        env:
+          CI: "true"
+
+  release:
+    # Tag a version (e.g. v1.0.0) to publish RoadmapBuilder.html as a
+    # one-file download on the Releases page.
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create release with the standalone file
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" RoadmapBuilder.html \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Roadmap Builder Lite ${GITHUB_REF_NAME}" \
+            --notes "Download RoadmapBuilder.html and double-click it. No install, no account, no network."
