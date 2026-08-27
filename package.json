@@ -1,0 +1,14 @@
+{
+  "name": "roadmap-lite",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone single-file Roadmap Builder — open RoadmapBuilder.html in any modern browser. No account, no server, no install. This package.json exists only for development and tests.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "test:browser": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1"
+  }
+}
