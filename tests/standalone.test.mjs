@@ -25,6 +25,15 @@ test("no cloud, AI, account, or share code survives the strip", () => {
   }
 });
 
+test("no personal brand logo is embedded in the page or stamped on exports", () => {
+  for (const banned of [
+    "data:image/png",                          // the inlined logo images
+    "app-logo", "brand-logo", "getLogoDataUrl", // header <img>s and the export stamp
+  ]) {
+    assert.ok(!html.includes(banned), `found logo reference: ${banned}`);
+  }
+});
+
 test("no external file references — the page must work from a bare file://", () => {
   // Every src/href in the page markup must be inline (data:) or in-page (#).
   // The inline script is excluded: export templates legitimately build markup.
